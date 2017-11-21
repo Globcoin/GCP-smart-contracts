@@ -17,7 +17,8 @@
  individuals.
 
 
- Successful bug hunters will be rewarded with up to $5,000 in ether
+ Successful bug hunters will be rewarded with up to $5,000 in ether.
+
  Below you'll find all the details on this program.
 
  If you&#39;ve already read this information and have found a bug you'd like to submit to Globcoin for review, please use this
