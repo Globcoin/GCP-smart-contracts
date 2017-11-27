@@ -6,7 +6,7 @@ import '../math/SafeMath.sol';
 /**
  * @title Crowdsale
  * @dev Crowdsale is a base contract for managing a token crowdsale.
- * Crowdsales have a start and end timestamps, where investors can make
+ * Crowdsales have a start and end blocks, where investors can make
  * token purchases and the crowdsale will assign them tokens based
  * on a token per ETH rate. Funds collected are forwarded to a wallet
  * as they arrive.
