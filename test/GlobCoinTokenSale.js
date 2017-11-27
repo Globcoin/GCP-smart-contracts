@@ -4,6 +4,8 @@ var RefundVault = artifacts.require("RefundVault")
 
 
 import EVMThrow from './helpers/EVMThrow'
+import revert from './helpers/revert'
+
 import {advanceBlock} from './helpers/advanceToBlock'
 
 const should = require('chai')
@@ -88,7 +90,7 @@ contract('GlobCoinTokenSale', function(accounts) {
               while (web3.eth.blockNumber < startSale) {
                 await advanceBlock()
               }
-              await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "300000000000000000000000" ,gas: 4700000}).should.be.rejectedWith(EVMThrow);
+              await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "300000000000000000000000" ,gas: 4700000}).should.be.rejectedWith(revert);
             });
 
             it( 'should give the team their tokens if the sale is sucessfull', async () => {
@@ -121,7 +123,7 @@ contract('GlobCoinTokenSale', function(accounts) {
               while (web3.eth.blockNumber < endBlock + 1) {
                 await advanceBlock()
               }
-              await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(EVMThrow);
+              await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(revert);
               let saleEnded = await globCoinSaleInstance.hasEnded();
               assert.equal(saleEnded, true);
             });
@@ -131,7 +133,7 @@ contract('GlobCoinTokenSale', function(accounts) {
                 await advanceBlock()
               }
               await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "150000000000000000000000" ,gas: 4700000});
-              await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(EVMThrow);
+              await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(revert);
             });
 
             it('should not be able to finalize twice', async () => {
@@ -144,7 +146,7 @@ contract('GlobCoinTokenSale', function(accounts) {
               }
               await globCoinSaleInstance.finalize({from: accounts[0]});
               let finalized = await globCoinSaleInstance.isFinalized.call();
-              await globCoinSaleInstance.finalize({from: accounts[0]}).should.be.rejectedWith(EVMThrow);
+              await globCoinSaleInstance.finalize({from: accounts[0]}).should.be.rejectedWith(revert);
             });
 
             it('should allow refunds if the softcap isnt reached', async () => {
@@ -164,12 +166,12 @@ contract('GlobCoinTokenSale', function(accounts) {
 
 
             it('should not be able to participate if hasnt started', async () => {
-              await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(EVMThrow);
+              await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(revert);
             });
 
 
             it('should not be able to participate if sender isnt whitelisted', async () => {
-              await globCoinSaleInstance.sendTransaction({ from: accounts[2], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(EVMThrow);
+              await globCoinSaleInstance.sendTransaction({ from: accounts[2], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(revert);
             });
 
             it('should be sucessfully completing the sale', async () => {
@@ -367,7 +369,7 @@ contract('GlobCoinTokenSale', function(accounts) {
                 while (web3.eth.blockNumber < startBlock) {
                   await advanceBlock();
                 }
-                await globCoinSaleInstance.sendTransaction({ from: accounts[2], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(EVMThrow);
+                await globCoinSaleInstance.sendTransaction({ from: accounts[2], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(revert);
               });
 
               it('should accept user that are  whitelisted for the presale', async () => {
@@ -376,7 +378,7 @@ contract('GlobCoinTokenSale', function(accounts) {
                   await advanceBlock();
                 }
                 await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000});
-                await globCoinSaleInstance.sendTransaction({ from: accounts[2], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(EVMThrow);
+                await globCoinSaleInstance.sendTransaction({ from: accounts[2], to: globCoinSaleInstance.address , value: "100" ,gas: 4700000}).should.be.rejectedWith(revert);
                 let balance = await gloInstance.balanceOf(accounts[1]);
                 assert.equal(balance, 17000);
               });
@@ -403,7 +405,7 @@ contract('GlobCoinTokenSale', function(accounts) {
                 while (web3.eth.blockNumber < startBlock) {
                   await advanceBlock();
                 }
-                await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "300000000000000000000000" ,gas: 4700000}).should.be.rejectedWith(EVMThrow);
+                await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "300000000000000000000000" ,gas: 4700000}).should.be.rejectedWith(revert);
               });
 
               it('should buy the whole presale', async () => {
@@ -443,7 +445,7 @@ contract('GlobCoinTokenSale', function(accounts) {
                 await globCoinSaleInstance.whitelistAddressesPresale(new Array(accounts[1]), { from: accounts[0]})
                 await globCoinSaleInstance.sendTransaction({ from: accounts[1], to: globCoinSaleInstance.address , value: "10000000000000000000000" ,gas: 4700000});
 
-                await gloInstance.transfer(accounts[3],1000,{from:accounts[1]}).should.be.rejectedWith(EVMThrow);
+                await gloInstance.transfer(accounts[3],1000,{from:accounts[1]}).should.be.rejectedWith(revert);
               });
 
               it('should be able to transfert tokens after the sale has been finalized', async () => {
