@@ -3,7 +3,7 @@ pragma solidity ^0.4.11;
 import "./crowdsale/CappedCrowdsale.sol";
 import "./crowdsale/RefundableCrowdsale.sol";
 import './math/SafeMath.sol';
-import './GlobcoinToken.sol';
+import './GlobCoinToken.sol';
 
 contract GlobCoinTokenSale is CappedCrowdsale, RefundableCrowdsale {
 
