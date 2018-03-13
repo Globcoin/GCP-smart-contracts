@@ -4,7 +4,7 @@ import "./token/MintableToken.sol";
 import './math/SafeMath.sol';
 
 
-contract GlobCoinToken is MintableToken {
+contract GlobcoinToken is MintableToken {
   using SafeMath for uint256;
   string public constant name = "GlobCoin Crypto Platform";
   string public constant symbol = "GCP";

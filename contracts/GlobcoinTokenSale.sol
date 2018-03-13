@@ -5,43 +5,45 @@ import "./crowdsale/RefundableCrowdsale.sol";
 import './math/SafeMath.sol';
 import './GlobCoinToken.sol';
 
-contract GlobCoinTokenSale is CappedCrowdsale, RefundableCrowdsale {
+contract GlobcoinTokenSale is CappedCrowdsale, RefundableCrowdsale {
 
   //Start of the Actual crowdsale. Starblock is the start of the presale.
-  uint256 startSale;
+  uint256 public startSale;
+  uint256 public endPresale;
 
   // Presale Rate per wei ~30% bonus over rate1
-  uint256 public constant PRESALERATE =  170;
+  uint256 public constant PRESALERATE = 17000;
 
   // new rates
-  uint256 public constant RATE1 =  130;
-  uint256 public constant RATE2 =  120;
-  uint256 public constant RATE3 =  110;
-  uint256 public constant RATE4 =  100;
+  uint256 public constant RATE1 = 13000;
+  uint256 public constant RATE2 = 12000;
+  uint256 public constant RATE3 = 11000;
+  uint256 public constant RATE4 = 10000;
 
 
   // Cap per tier for bonus in wei.
-  uint256 public constant TIER1 =  10000000000000000000000;
-  uint256 public constant TIER2 =  25000000000000000000000;
-  uint256 public constant TIER3 =  50000000000000000000000;
+  uint256 public constant TIER1 =  3000000000000000000000;
+  uint256 public constant TIER2 =  5000000000000000000000;
+  uint256 public constant TIER3 =  7500000000000000000000;
 
   //Presale
   uint256 public weiRaisedPreSale;
   uint256 public presaleCap;
 
-  function GlobCoinTokenSale(uint256 _startBlock,uint256 _startSale, uint256 _endBlock, uint256 _goal,uint256 _presaleCap, uint256 _cap, address _wallet) CappedCrowdsale(_cap) FinalizableCrowdsale() RefundableCrowdsale(_goal) Crowdsale(_startBlock, _endBlock, _wallet) {
+  function GlobcoinTokenSale(uint256 _startBlock, uint256 _endPresale, uint256 _startSale, uint256 _endBlock, uint256 _goal,uint256 _presaleCap, uint256 _cap, address _wallet) CappedCrowdsale(_cap) FinalizableCrowdsale() RefundableCrowdsale(_goal) Crowdsale(_startBlock, _endBlock, _wallet) {
     require(_goal <= _cap);
     require(_startSale > _startBlock);
     require(_endBlock > _startSale);
     require(_presaleCap > 0);
-    require(_presaleCap < _cap);
+    require(_presaleCap <= _cap);
 
     startSale = _startSale;
+    endPresale = _endPresale;
     presaleCap = _presaleCap;
   }
 
   function createTokenContract() internal returns (MintableToken) {
-    return new GlobCoinToken();
+    return new GlobcoinToken();
   }
 
   //white listed address
@@ -175,9 +177,12 @@ contract GlobCoinTokenSale is CappedCrowdsale, RefundableCrowdsale {
 
   function finalization() internal {
     if (goalReached()) {
-      //Globcoin gets 100% of the amount of tokens created through the crowdsale. (50% of the total token)
+      //Globcoin gets 60% of the amount of the total token supply
       uint256 totalSupply = token.totalSupply();
+      // total supply
       token.mint(wallet, totalSupply);
+      // 50% of tokens generated during crowdsale to make it 60% for GC
+      token.mint(wallet, totalSupply.div(2));
       token.finishMinting();
     }
     super.finalization();
@@ -187,13 +192,14 @@ contract GlobCoinTokenSale is CappedCrowdsale, RefundableCrowdsale {
   function validPurchase() internal constant returns (bool) {
     bool withinPeriod = block.number >= startSale && block.number <= endBlock;
     bool nonZeroPurchase = msg.value != 0;
-    bool withinCap = weiRaised.add(msg.value) <= cap;
+    uint256 totalWeiRaised = weiRaisedPreSale.add(weiRaised);
+    bool withinCap = totalWeiRaised.add(msg.value) <= cap;
     return withinCap && withinPeriod && nonZeroPurchase;
   }
 
   // Sale period start at StartBlock until the sale Start ( startSale )
   function validPurchasePresale() internal constant returns (bool) {
-    bool withinPeriod = block.number >= startBlock && block.number < startSale;
+    bool withinPeriod = (block.number >= startBlock) && (block.number <= endPresale);
     bool nonZeroPurchase = msg.value != 0;
     bool withinCap = weiRaisedPreSale.add(msg.value) <= presaleCap;
     return withinPeriod && nonZeroPurchase && withinCap;
